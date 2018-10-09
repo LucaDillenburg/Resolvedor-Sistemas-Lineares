@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1385313278 source:e:\4° semestre\topicos em orientacao a objetos\sistemaslineares\projooj\main.c
+	<stdio.h>
+	<stdlib.h>
+
+1539084879 source:e:\4° semestre\topicos em orientacao a objetos\sistemaslineares\projooj\sistemaslineares.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+
+1539016730 source:f:\4° semestre\topicos em orientacao a objetos\sistemaslineares\projooj\sistemaslineares.c
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+
