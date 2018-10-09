@@ -46,10 +46,7 @@ int achaCarinha (No* head, char* c)
         current = current->prox;
     }
 
-    if(head == NULL)
         return -1;
-    else
-        return -i;
 }
 
 char/*boolean*/ insira (Lista* lis, char* inf)
@@ -80,21 +77,9 @@ char/*boolean*/ insira (Lista* lis, char* inf)
     novo->prox  = NULL;
 }
 
-int main()
+char** mallocMatriz(int *n)
 {
-    FILE *f = fopen("sistema.txt", "r");
-
-    char* str = (char*)malloc(sizeof(char) * 255);
-    char* aux = (char*)malloc(sizeof(char) * 255);
-    str[0]='\0';
-
-    int* n;/*o qrquivo contera n linhas com n variaveis*/
-
-    fscanf(f, "%i", &n);
-
-    printf("N:%i\n", n);
-
-    int **m;
+    char** m;
     m = (int**)malloc((int)n * sizeof(int*));
     int i;
     int j;
@@ -105,93 +90,113 @@ int main()
         for(j = 0; j < ((int)n + 1); j++)
             m[i][j] = 0;
 
+    return m;
+}
+
+void resetarVariaveis(char** a1, char** a2)
+{
+    *a1     = (char*)malloc(sizeof(char) * 255);
+    *a1[0]  = '\0';
+
+    *a2     = (char*)malloc(sizeof(char) * 255);
+    *a2[0]  = '\0';
+}
+
+char* strFromFile(char* nomeArquivo, int *n)
+{
+    /*Lendo o arquivo*/
+    FILE *f = fopen("sistema.txt"/*nomeArquivo*/, "r");
+    char* ret = (char*)malloc(sizeof(char) * 255);
+    char* aux = (char*)malloc(sizeof(char) * 255);
+    ret[0] = '\0';
+
+    fscanf(f, "%i", n);
+
     fgets(aux, 1024, f);
 
-    /*Declaring list*/
-    Lista lis;
-    lis.inicio    = NULL;
-    lis.print     = (No*)               &strPrint;
-    lis.achar     = (int (*) (No*, char*)) &achaCarinha;
-    /*End of List Declaration*/
-
     while(fgets(aux, 1024, f) != NULL)
-        strcat(str, aux);
+        strcat(ret, aux);
+    /*Fim da leitura do arquivo*/
 
     free(aux);
     /*fclose(f);*/
+
+    return ret;
+}
+
+char** fileParaVetor(char* nomeArquivo, int *n/*o qrquivo contera n linhas com n variaveis*/, Lista* lis)
+{
+    int i;
+    int j;
+    char* str = strFromFile(nomeArquivo, n);
+    printf("N: %i\n", *n);
+    int **m = mallocMatriz(*n);
+
     printf("\nSistemas:\n---------------\n");
     printf("%s\n", str);
     printf("---------------\n");
 
     int auxSinal = 1;
+    char* auxInt;
+    char* auxStr;
+
+    resetarVariaveis(&auxInt, &auxStr);
+
     int linha    = 0;
-
-    char* auxInt = (char*)malloc(sizeof(char) * 255);
-    auxInt[0] = '\0';
-
-    char* auxStr = (char*)malloc(sizeof(char) * 255);
-    auxStr[0] = '\0';
 
     for(i = 0;;i++)
     {
+        printf("%i",i);
         if(str[i] == '-')
         {
+            printf("oi");
             if(auxStr[0] != '\0')
-                if(lis.achar(lis.inicio, auxStr) < 0)
+                if(lis->achar(lis->inicio, auxStr) < 0)
                 {
                     insira(&lis, auxStr);
                 }
 
             if(auxStr[0] == '\0')
-                m[linha][((int)n + 0)]                  += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][((int)n + 0)]                    += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
             else
-                m[linha][lis.achar(lis.inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][lis->achar(lis->inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
 
             auxSinal  = -1;
-            auxInt    = (char*)malloc(sizeof(char) * 255);
-            auxInt[0] = '\0';
-            auxStr    = (char*)malloc(sizeof(char) * 255);
-            auxStr[0] = '\0';
+            resetarVariaveis(&auxInt, &auxStr);
         }
 
         if(str[i] == '+' || str[i] == '=')
         {
             if(auxStr[0] != '\0')
-                if(lis.achar(lis.inicio, auxStr) < 0)
+                if(lis->achar(lis->inicio, auxStr) < 0)
                 {
                     insira(&lis, auxStr);
                 }
 
             if(auxStr[0] == '\0')
-                m[linha][((int)n + 0)]                  += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][((int)n + 0)]                    += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
             else
-                m[linha][lis.achar(lis.inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][lis->achar(lis->inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
 
             auxSinal  = 1;
-            auxInt    = (char*)malloc(sizeof(char) * 255);
-            auxInt[0] = '\0';;
-            auxStr    = (char*)malloc(sizeof(char) * 255);
-            auxStr[0] = '\0';
+            resetarVariaveis(&auxInt, &auxStr);
         }
 
         if(str[i] == '\n' || str[i] == '\0')
         {
             if(auxStr[0] != '\0')
-                if(lis.achar(lis.inicio, auxStr) < 0)
+                if(lis->achar(lis->inicio, auxStr) < 0)
                 {
                     insira(&lis, auxStr);
                 }
 
             if(auxStr[0] == '\0')
-                m[linha][((int)n + 0)]                  += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][((int)n + 0)]                    += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
             else
-                m[linha][lis.achar(lis.inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][lis->achar(lis->inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
 
             auxSinal  = 1;
-            auxInt    = (char*)malloc(sizeof(char) * 255);
-            auxInt[0] = '\0';
-            auxStr    = (char*)malloc(sizeof(char) * 255);
-            auxStr[0] = '\0';
+            resetarVariaveis(&auxInt, &auxStr);
 
             linha++;
         }
@@ -219,25 +224,7 @@ int main()
                     auxInt[j + 1] = '\0';
                     break;
                 }
-
-
     }
-    /*printing everything*/
-    printf("\nVariaveis:\n---------------\n");
-    lis.print(lis.inicio);
-    printf("---------------\n");
-
-    printf("\nMATRIZ:\n---------------\n");
-
-    for(i = 0; i < n; i++)
-    {
-       for(j = 0; j < ((int)n + 1); j++)
-            printf(((j==0)?"%i;":"\t%i;"),m[i][j]);
-
-        printf("\n");
-    }
-
-    printf("---------------\n");
 
     /*Free everything*/
     free(i);
@@ -256,4 +243,44 @@ int main()
         free(m[i]);
     }
     free(m);
+}
+
+int main()
+{
+    printf("Digite o nome do arquivo:\n");
+
+    char* nomeArquivo = (char*)malloc(sizeof(char) * 255);
+
+    gets(nomeArquivo);
+
+    int n;
+
+    /*Declaring list*/
+    Lista* lis     = (Lista*)malloc(sizeof(Lista*));
+    lis->inicio    = NULL;
+    lis->print     = (No*)                  &strPrint;
+    lis->achar     = (int (*) (No*, char*)) &achaCarinha;
+    /*End of List Declaration*/
+
+    char** m = fileParaVetor(nomeArquivo, &n, lis);
+
+    /*printing everything*/
+    printf("\nVariaveis:\n---------------\n");
+    lis->print(lis->inicio);
+    printf("---------------\n");
+
+    printf("\nMATRIZ:\n---------------\n");
+
+    int i;
+    int j;
+
+    for(i = 0; i < n; i++)
+    {
+       for(j = 0; j < ((int)n + 1); j++)
+            printf(((j==0)?"%i;":"\t%i;"),m[i][j]);
+
+        printf("\n");
+    }
+
+    printf("---------------\n");
 }
