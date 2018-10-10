@@ -84,21 +84,20 @@ double** fileParaMatriz(char* nomeArquivo, int *n/*o qrquivo contera n linhas co
 
     for(i = 0;;i++)
     {
-        printf("i:%i\nauxStr:%c\n", i, str[i]);
         double valor;
         if(str[i] == '-' || str[i] == '+' || str[i] == '=' || str[i] == '\n' || str[i] == '\0')
         {
             valor = (double)(((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal);
             if(auxStr[0] != '\0')
                 if(ondeEsta(lis, auxStr) < 0)
-                {
                     inserirFinal(lis, auxStr);
-                    printLista(lis);
-                }
 
             //printf("%lf", (double)(((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal));
             if(auxStr[0] == '\0')
-                m[linha][*n]                    += valor;
+            {
+                if(str[i] == '\n' || str[i] == '\0')
+                    m[linha][*n]                    += valor;
+            }
             else
                 m[linha][ondeEsta(lis, auxStr)] += valor;
 
@@ -107,14 +106,10 @@ double** fileParaMatriz(char* nomeArquivo, int *n/*o qrquivo contera n linhas co
         }
 
         if(str[i] == '-' )
-        {
             auxSinal  = -1;
-        }
 
         if(str[i] == '\n' || str[i] == '\0')
-        {
             linha++;
-        }
 
         if(isalpha(str[i]))
         {
@@ -147,13 +142,6 @@ double** fileParaMatriz(char* nomeArquivo, int *n/*o qrquivo contera n linhas co
     free(auxInt);
     free(str);
 
-    for(i = 0; i < *n; i++)
-    {
-        for(j = 0; j < (*n + 1); j++)
-            printf("%lf  ", m[i][j]);
-        printf("\n");
-    }
-
     return m;
 }
 
@@ -178,7 +166,7 @@ int main()
     /*printing everything*/
     printf("\nVariaveis:\n---------------\n");
     printLista(lis);
-    printf("---------------\n");
+    printf("\n---------------\n");
 
     printf("\nMATRIZ:\n---------------\n");
 
