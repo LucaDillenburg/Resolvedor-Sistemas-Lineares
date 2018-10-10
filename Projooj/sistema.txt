@@ -1,4 +1,4 @@
 3
 CACHORRO   - oi        + 3pao      = 12
 CACHORRO   + 10oi      = 1
-5CACHORRO  - pao + po  = 0
+5CACHORRO  - pao = 0

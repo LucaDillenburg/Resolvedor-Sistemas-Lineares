@@ -1,93 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-
-/*void trocar();
-
-/*void resolver();
-
-/*void abrirArquivo();*/
-
-typedef
-    struct No
-    {
-        char*      info;
-        struct No* prox;
-    }
-    No;
-
-typedef
-    struct Lista
-    {
-        No*  inicio;
-        void (*print)     (No*);
-        int  (*achar)     (No*, char*);
-    }
-    Lista;
-
-void strPrint (No* head)
+/*Lista*/
+typedef struct sNo
 {
-    No* current = head;
-    while (current != NULL)
-    {
-        printf("%s\n", current->info);
-        current = current->prox;
-    }
-}
-
-int achaCarinha (No* head, char* c)
+    void* info;
+    struct sNo* prox;
+} No;
+typedef struct
 {
-    No* current = head;
-    int i = 0;
-    for(; current != NULL; i++)
-    {
-        if(strcmp(current->info, c) == 0)
-            return i;
-        current = current->prox;
-    }
+    No* prim;
+    char (*equals) (void*, void*);
+} Lista;
+/*Fim da Lista*/
 
-        return -1;
-}
+char equalsStr (char* str1, char* str2);
 
-char/*boolean*/ insira (Lista* lis, char* inf)
+double** mallocMatriz(int n)
 {
-    No* atual = lis->inicio;
+    double** m = (double**)malloc(n * sizeof(double*));
 
-    if(atual == NULL)
-    {
-        No* novo    = (No*)malloc(sizeof(No));
-        novo->prox  = NULL;
-        novo ->info = inf;
-        lis->inicio = novo;
-        return;
-    }
-
-    for(;;) /*parar ao achar onde inserir*/
-    {
-        if (atual->prox == NULL)
-            break;
-
-        atual = atual->prox;
-    }
-
-    No* novo    = (No*)malloc(sizeof(No));
-    novo ->info = inf;
-    novo ->prox = atual->prox;
-    atual->prox = novo;
-    novo->prox  = NULL;
-}
-
-char** mallocMatriz(int *n)
-{
-    char** m;
-    m = (int**)malloc((int)n * sizeof(int*));
-    int i;
-    int j;
+    int i, j;
     for(i = 0; i < n; i++)
-        m[i] = (int*)malloc((int)(n + 1) * sizeof(int));
+        m[i] = (double*)malloc((n + 1) * sizeof(double));
 
     for(i = 0; i < n; i++)
-        for(j = 0; j < ((int)n + 1); j++)
+        for(j = 0; j < (n + 1); j++)
             m[i][j] = 0;
 
     return m;
@@ -124,13 +62,13 @@ char* strFromFile(char* nomeArquivo, int *n)
     return ret;
 }
 
-char** fileParaVetor(char* nomeArquivo, int *n/*o qrquivo contera n linhas com n variaveis*/, Lista* lis)
+double** fileParaMatriz(char* nomeArquivo, int *n/*o qrquivo contera n linhas com n variaveis*/, Lista* lis)
 {
     int i;
     int j;
     char* str = strFromFile(nomeArquivo, n);
     printf("N: %i\n", *n);
-    int **m = mallocMatriz(*n);
+    double **m = mallocMatriz(*n);
 
     printf("\nSistemas:\n---------------\n");
     printf("%s\n", str);
@@ -146,58 +84,35 @@ char** fileParaVetor(char* nomeArquivo, int *n/*o qrquivo contera n linhas com n
 
     for(i = 0;;i++)
     {
-        printf("%i",i);
-        if(str[i] == '-')
+        printf("i:%i\nauxStr:%c\n", i, str[i]);
+        double valor;
+        if(str[i] == '-' || str[i] == '+' || str[i] == '=' || str[i] == '\n' || str[i] == '\0')
         {
-            printf("oi");
+            valor = (double)(((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal);
             if(auxStr[0] != '\0')
-                if(lis->achar(lis->inicio, auxStr) < 0)
+                if(ondeEsta(lis, auxStr) < 0)
                 {
-                    insira(&lis, auxStr);
+                    inserirFinal(lis, auxStr);
+                    printLista(lis);
                 }
 
+            //printf("%lf", (double)(((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal));
             if(auxStr[0] == '\0')
-                m[linha][((int)n + 0)]                    += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][*n]                    += valor;
             else
-                m[linha][lis->achar(lis->inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
-
-            auxSinal  = -1;
-            resetarVariaveis(&auxInt, &auxStr);
-        }
-
-        if(str[i] == '+' || str[i] == '=')
-        {
-            if(auxStr[0] != '\0')
-                if(lis->achar(lis->inicio, auxStr) < 0)
-                {
-                    insira(&lis, auxStr);
-                }
-
-            if(auxStr[0] == '\0')
-                m[linha][((int)n + 0)]                    += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
-            else
-                m[linha][lis->achar(lis->inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
+                m[linha][ondeEsta(lis, auxStr)] += valor;
 
             auxSinal  = 1;
             resetarVariaveis(&auxInt, &auxStr);
+        }
+
+        if(str[i] == '-' )
+        {
+            auxSinal  = -1;
         }
 
         if(str[i] == '\n' || str[i] == '\0')
         {
-            if(auxStr[0] != '\0')
-                if(lis->achar(lis->inicio, auxStr) < 0)
-                {
-                    insira(&lis, auxStr);
-                }
-
-            if(auxStr[0] == '\0')
-                m[linha][((int)n + 0)]                    += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
-            else
-                m[linha][lis->achar(lis->inicio, auxStr)] += ((auxInt[0]=='\0')?1:atoi(auxInt)) * auxSinal;
-
-            auxSinal  = 1;
-            resetarVariaveis(&auxInt, &auxStr);
-
             linha++;
         }
 
@@ -216,6 +131,7 @@ char** fileParaVetor(char* nomeArquivo, int *n/*o qrquivo contera n linhas com n
         if(str[i] == '\0')
             break;
 
+
         if(isdigit(str[i]))
             for(j = 0;;j++)
                 if(auxInt[j] == '\0')
@@ -227,22 +143,18 @@ char** fileParaVetor(char* nomeArquivo, int *n/*o qrquivo contera n linhas com n
     }
 
     /*Free everything*/
-    free(i);
-    free(j);
-    free(linha);
-    free(auxSinal);
     free(auxStr);
     free(auxInt);
     free(str);
 
-    for(i = 0; i < n; i++)
+    for(i = 0; i < *n; i++)
     {
-        for(j = 0; j < ((int)n + 1); j++)
-            free(m[i][j]);
-
-        free(m[i]);
+        for(j = 0; j < (*n + 1); j++)
+            printf("%lf  ", m[i][j]);
+        printf("\n");
     }
-    free(m);
+
+    return m;
 }
 
 int main()
@@ -257,16 +169,15 @@ int main()
 
     /*Declaring list*/
     Lista* lis     = (Lista*)malloc(sizeof(Lista*));
-    lis->inicio    = NULL;
-    lis->print     = (No*)                  &strPrint;
-    lis->achar     = (int (*) (No*, char*)) &achaCarinha;
+    lis->prim      = NULL;
+    lis->equals    = (char(*)(void*,void*))&equalsStr;
     /*End of List Declaration*/
 
-    char** m = fileParaVetor(nomeArquivo, &n, lis);
+    double** m = fileParaMatriz(nomeArquivo, &n, lis);
 
     /*printing everything*/
     printf("\nVariaveis:\n---------------\n");
-    lis->print(lis->inicio);
+    printLista(lis);
     printf("---------------\n");
 
     printf("\nMATRIZ:\n---------------\n");
@@ -277,10 +188,154 @@ int main()
     for(i = 0; i < n; i++)
     {
        for(j = 0; j < ((int)n + 1); j++)
-            printf(((j==0)?"%i;":"\t%i;"),m[i][j]);
+            printf(((j==0)?"%lf;":"\t%lf;"),m[i][j]);
 
         printf("\n");
     }
 
     printf("---------------\n");
+}
+
+/* INSERIR */
+void inserirComeco(Lista* lista, void* info)
+{
+    No* novoPrim = (No*)malloc(sizeof(No));
+    (*novoPrim).info = info;
+    (*novoPrim).prox = (*lista).prim;
+
+    (*lista).prim = novoPrim;
+}
+
+void inserirFinal(Lista* lista, void* info)
+{
+    if ((*lista).prim == NULL)
+    {
+        inserirComeco(lista, info);
+        return;
+    }
+
+    No* atual = (*lista).prim;
+    while ((*atual).prox != NULL)
+        atual = (*atual).prox;
+
+    No* novo = (No*)malloc(sizeof(No));
+    (*novo).info = info;
+    (*novo).prox = NULL;
+
+    (*atual).prox = novo;
+}
+
+void inserirEm(Lista* lista, void* info, int onde)
+{
+    if (onde == 0)
+    {
+        inserirComeco(lista, info);
+        return;
+    }
+
+    No* atual = (*lista).prim;
+    int i;
+    for(i=1; i<onde; i++)
+    {
+        if (atual == NULL)
+            return;
+        atual = (*atual).prox;
+    }
+
+    /*deve ser adicionado o noh no atual.prox*/
+    No* novo= (No*)malloc(sizeof(No));
+    (*novo).info = info;
+    (*novo).prox = (*atual).prox;
+
+    (*atual).prox = novo;
+}
+
+/*REMOVER*/
+void removerComeco(Lista* lista)
+{
+    if ((*lista).prim == NULL)
+        return;
+
+    No* aux = (*lista).prim;
+    (*lista).prim = (*(*lista).prim).prox;
+    free(aux);
+}
+
+void removerFinal(Lista* lista)
+{
+    if ((*lista).prim == NULL)
+        return;
+
+    No* anterior = NULL;
+    No* atual = (*lista).prim;
+    while ((*atual).prox != NULL)
+    {
+        anterior = atual;
+        atual = (*atual).prox;
+    }
+
+    if (anterior == NULL) //soh tinha um elemento
+        (*lista).prim = NULL;
+    else
+        (*anterior).prox = NULL;
+
+    //libera o espaco do ultimo Noh
+    free(atual);
+}
+
+void removerEm(Lista* lista, int onde)
+{
+    if (onde == 0)
+    {
+        removerComeco(lista);
+        return;
+    }
+
+    No* atual = (*lista).prim;
+    int i;
+    for(i=1; i<onde; i++)
+    {
+        if (atual == NULL)
+            return;
+        atual = (*atual).prox;
+    }
+
+    /*atual.prox deve ser removido*/
+    No* aux = (*atual).prox;
+    if (aux == NULL)
+        return;
+    (*atual).prox = (*(*atual).prox).prox;
+
+    //libera o espaco do noh removido
+    free(aux);
+}
+
+/*OUTROS*/
+int ondeEsta (Lista* lista, void* info)
+{
+    No* atual = (*lista).prim;
+
+    int i = 0;
+    for(; atual != NULL; i++, atual = (*atual).prox)
+        if( (*(*lista).equals)((*atual).info, info) )
+            return i;
+    return -1;
+}
+
+
+void printLista(Lista* lista)
+{
+    No* atual = (*lista).prim;
+    while(atual != NULL)
+    {
+        printf("%s -> ", (*atual).info);
+        atual = (*atual).prox;
+    }
+    printf("null");
+}
+
+/**/
+char equalsStr (char* str1, char* str2)
+{
+    return strcmp(str1, str2) == 0;
 }
