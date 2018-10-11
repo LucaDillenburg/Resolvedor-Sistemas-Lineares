@@ -107,6 +107,9 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
 
     int linha = 0;
     int i;
+
+    char ehVariavel = 0;
+
     for(i = 0; ; i++)
     {
         double valor;
@@ -132,6 +135,7 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
                 *(*(matriz+linha)+ondeEsta(incognitas, auxStr)) += valor;
 
             auxSinal  = 1;
+            ehVariavel = 0;
             resetarVariaveis(&auxInt, &auxStr);
         }
 
@@ -148,10 +152,10 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
 
         if(*(strArq+i) == '\0')
             break;
-
-        if(isalpha(*(strArq+i)))
+        if(isalpha(*(strArq+i)) || (ehVariavel == 1 && ((*(strArq+i)) != ' ')))
         {
             int j;
+            ehVariavel = 1;
             for(j = 0;;j++)
                 if(*(auxStr+j) == '\0')
                 {
@@ -166,14 +170,16 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
             for(j = 0;;j++)
                 if(*(auxInt+j) == '\0')
                 {
-                    *(auxInt+j) = *(strArq+i);
                     *(auxInt+(j + 1)) = '\0';
+
+                    *(auxInt+j) = *(strArq+i);
                     break;
                 }
         }
     }
 
     /*Free tudo que deu malloc*/
+    free(ehVariavel);
     free(auxStr);
     free(auxInt);
     free(strArq);
