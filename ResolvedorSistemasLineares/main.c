@@ -152,7 +152,7 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
 
         if(*(strArq+i) == '\0')
             break;
-        if(isalpha(*(strArq+i)) || (ehVariavel == 1 && ((*(strArq+i)) != ' ')))
+        if(isalpha(*(strArq+i)) || (ehVariavel && ((*(strArq+i)) != ' ')))
         {
             int j;
             ehVariavel = 1;
@@ -179,7 +179,6 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
     }
 
     /*Free tudo que deu malloc*/
-    free(ehVariavel);
     free(auxStr);
     free(auxInt);
     free(strArq);
