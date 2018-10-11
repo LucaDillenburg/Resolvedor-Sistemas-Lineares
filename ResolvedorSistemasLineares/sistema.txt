@@ -1,0 +1,4 @@
+3
+-CAC7HORRO   - oi        + 3pao      = 12
+CAC7HORRO   + 10oi      = 1
+5CAC7HORRO  - pao = 1
