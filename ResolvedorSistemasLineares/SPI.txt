@@ -1,4 +1,0 @@
-3
-2CACHORRO + 3 PONEIS = 5
-1PAO + 3 CACHORRO    = 2
-0 = 3

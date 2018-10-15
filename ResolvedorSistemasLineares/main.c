@@ -24,6 +24,7 @@ void removerEm(Lista* lista, int onde);
 int ondeEsta (Lista* lista, void* info);
 void* getElemento(Lista* lista, int n);
 void printLista(Lista* lista);
+void freeLista(Lista* lista);
 char equalsStr (char* str1, char* str2);
 //file -> matriz
 double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas, int* erro);
@@ -92,6 +93,8 @@ int main()
     int i;
     for (i = 0; i<ordem; i++)
         printf("    %s = %lf\n", (char*)getElemento(incognitas, i), *(solucao+i));
+
+    freeLista(incognitas);
 
     return 0;
 }
@@ -276,6 +279,8 @@ double* resolverSistema(double** matriz, int ordem, Lista* incognitas)
     int i;
     for(i=0; i<ordem; i++)
         *(solucao+i) = *(*(matriz+i)+ordem);
+
+    free(matriz);
 
     return solucao;
 }
@@ -611,6 +616,21 @@ void printListaStr(Lista* lista)
         atual = (*atual).prox;
     }
     printf("null");
+}
+
+void freeLista(Lista* lista)
+{
+    No* atual = (*lista).prim;
+    while(atual != NULL)
+    {
+        free((*atual).info);
+        No* prox = (*atual).prox;
+
+        free(atual);
+        atual = prox;
+    }
+
+    free(lista);
 }
 
 /**/
