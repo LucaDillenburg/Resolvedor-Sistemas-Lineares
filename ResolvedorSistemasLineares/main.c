@@ -26,7 +26,7 @@ void* getElemento(Lista* lista, int n);
 void printLista(Lista* lista);
 char equalsStr (char* str1, char* str2);
 //file -> matriz
-double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas);
+double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas, int* erro);
 char* strFromFile(char* nomeArquivo, int* ordem);
 double** mallocMatriz(int ordem);
 void resetarVariaveis(char** str1, char** str2);
@@ -54,12 +54,20 @@ int main()
     Lista* incognitas = (Lista*)malloc(sizeof(Lista));
     (*incognitas).prim = NULL;
     (*incognitas).equals = (char(*)(void*,void*))&equalsStr;
-    double** matriz = fileParaMatriz(nomeArq, &ordem, incognitas);
+    int erro = 255;
+    double** matriz = fileParaMatriz(nomeArq, &ordem, incognitas, &erro);
 
-    if (matriz ==NULL)
+    if (matriz == NULL)
     {
-        printf("O numero de variaveis no arquivo nao corresponde ao numero de variaveis escrito no decorrer do arquivo!");
-        return -2;
+        if (erro == 2)
+        {
+            printf("O numero de variaveis no arquivo nao corresponde ao numero de variaveis escrito no decorrer do arquivo!");
+            return -2;
+        }else
+        {
+            printf("O arquivo nao existe!");
+            return -3;
+        }
     }
 
     char resposta = 'n';
@@ -90,9 +98,15 @@ int main()
 
 
     /*FILE PARA MATRIZ*/
-double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
+double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas, int* erro)
 {
     char* strArq = strFromFile(nomeArquivo, ordem);
+    if (strArq == NULL)
+    {
+        *erro = 1; //se arquivo nao existe
+        return NULL;
+    }
+
     double** matriz = mallocMatriz(*ordem);
 
     printf("SISTEMA ESCRITO NO ARQUIVO:\n", *ordem);
@@ -121,7 +135,10 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
                 {
                     //verifica se nao ha incognitas a mais do que deveria
                     if (qtdIncognitas >= *ordem)
+                    {
+                        *erro = 2; //se o numero de variaveis no arquivo nao corresponder ao numero de variaveis escrito no decorrer do arquivo
                         return NULL;
+                    }
                     inserirFinal(incognitas, auxStr);
                     qtdIncognitas++;
                 }
@@ -185,7 +202,10 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
 
     //verifica se nao ha incognitas a menor do que deveria
     if (qtdIncognitas != *ordem)
+    {
+        *erro = 2; //se o numero de variaveis no arquivo nao corresponder ao numero de variaveis escrito no decorrer do arquivo
         return NULL;
+    }
     return matriz;
 }
 
@@ -193,6 +213,9 @@ char* strFromFile(char* nomeArquivo, int* ordem)
 {
     /*Lendo o arquivo*/
     FILE* file = fopen(nomeArquivo, "r");
+    if(file == NULL)
+        return NULL;
+
     char* auxRet = (char*)malloc(sizeof(char) * 7500);
     char* auxConcat = (char*)malloc(sizeof(char) * 1024);
     *auxRet = '\0';
