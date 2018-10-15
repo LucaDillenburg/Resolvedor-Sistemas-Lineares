@@ -177,6 +177,19 @@ double** fileParaMatriz(char* nomeArquivo, int* ordem, Lista* incognitas)
                 }
         }
     }
+    for(i = 0; i < *ordem; i++)
+    {
+        int j;
+        for(j = 0; j < *ordem - 1; j++)
+            if(*(*(matriz + i) + j) != 0)
+                break;
+
+        if(j == *ordem - 1)
+        {
+            printf("Sistema impossível ou indeterminado");
+            exit(0);
+        }
+    }
 
     /*Free tudo que deu malloc*/
     free(auxStr);
