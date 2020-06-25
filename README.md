@@ -1,5 +1,9 @@
-# Resolvedor-Sistemas-Lineares
-Programa em C que resolve sistemas lineares com N variáveis escrita em arquivo.
+# System of Linear Equations Solver
+A C program that solves systems of linear equations written in a file with N variables. It uses Gaussian Elimination algorithm.
 
-### Método
-Foi usado o método de eliminação de Gauss.
+## Example
+```sh
+make main
+./main
+# File: system_linear_equations.txt
+```

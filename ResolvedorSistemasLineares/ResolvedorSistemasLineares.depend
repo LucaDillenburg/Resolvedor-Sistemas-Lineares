@@ -1,7 +1,0 @@
-# depslib dependency file v1.0
-1539608267 source:e:\4° semestre\topicos em orientacao a objetos\sistemaslineares\resolvedor-sistemas-lineares\resolvedorsistemaslineares\main.c
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-	<math.h>
-
